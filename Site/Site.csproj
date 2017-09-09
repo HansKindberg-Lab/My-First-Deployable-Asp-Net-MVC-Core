@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+	<PropertyGroup>
+		<TargetFramework>netcoreapp2.0</TargetFramework>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
+		<PackageReference Include="Microsoft.VisualStudio.SlowCheetah" Version="3.0.61" />
+	</ItemGroup>
+	<ItemGroup>
+		<DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<Content Update="AppSettings.json">
+			<TransformOnBuild>true</TransformOnBuild>
+		</Content>
+		<None Include="AppSettings.Development.json">
+			<IsTransformFile>True</IsTransformFile>
+		</None>
+		<Content Remove="AppSettings.Development.json" />
+		<None Include="AppSettings.Production.json">
+			<IsTransformFile>True</IsTransformFile>
+		</None>
+		<Content Remove="AppSettings.Production.json" />
+		<None Include="AppSettings.Stage.json">
+			<IsTransformFile>True</IsTransformFile>
+		</None>
+		<Content Remove="AppSettings.Stage.json" />
+		<None Include="AppSettings.Test.json">
+			<IsTransformFile>True</IsTransformFile>
+		</None>
+		<Content Remove="AppSettings.Test.json" />
+		<Content Update="Web.config">
+			<TransformOnBuild>true</TransformOnBuild>
+		</Content>
+		<None Include="Web.Development.config">
+			<IsTransformFile>True</IsTransformFile>
+		</None>
+		<Content Remove="Web.Development.config" />
+		<None Include="Web.Production.config">
+			<IsTransformFile>True</IsTransformFile>
+		</None>
+		<Content Remove="Web.Production.config" />
+		<None Include="Web.Stage.config">
+			<IsTransformFile>True</IsTransformFile>
+		</None>
+		<Content Remove="Web.Stage.config" />
+		<None Include="Web.Test.config">
+			<IsTransformFile>True</IsTransformFile>
+		</None>
+		<Content Remove="Web.Test.config" />
+	</ItemGroup>
+</Project>
