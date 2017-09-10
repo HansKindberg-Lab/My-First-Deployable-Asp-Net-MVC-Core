@@ -13,14 +13,16 @@
 		<Content Update="AppSettings.json">
 			<TransformOnBuild>true</TransformOnBuild>
 		</Content>
-		<None Include="AppSettings.Development.json">
-			<IsTransformFile>True</IsTransformFile>
-		</None>
+		<None Include="AppSettings.Development.json" />
 		<Content Remove="AppSettings.Development.json" />
 		<None Include="AppSettings.Production.json">
 			<IsTransformFile>True</IsTransformFile>
 		</None>
 		<Content Remove="AppSettings.Production.json" />
+		<None Include="AppSettings.Release.json">
+			<IsTransformFile>True</IsTransformFile>
+		</None>
+		<Content Remove="AppSettings.Release.json" />
 		<None Include="AppSettings.Stage.json">
 			<IsTransformFile>True</IsTransformFile>
 		</None>
@@ -32,14 +34,14 @@
 		<Content Update="Web.config">
 			<TransformOnBuild>true</TransformOnBuild>
 		</Content>
-		<None Include="Web.Development.config">
-			<IsTransformFile>True</IsTransformFile>
-		</None>
-		<Content Remove="Web.Development.config" />
 		<None Include="Web.Production.config">
 			<IsTransformFile>True</IsTransformFile>
 		</None>
 		<Content Remove="Web.Production.config" />
+		<None Include="Web.Release.config">
+			<IsTransformFile>True</IsTransformFile>
+		</None>
+		<Content Remove="Web.Release.config" />
 		<None Include="Web.Stage.config">
 			<IsTransformFile>True</IsTransformFile>
 		</None>
@@ -49,4 +51,30 @@
 		</None>
 		<Content Remove="Web.Test.config" />
 	</ItemGroup>
+	<Target Name="Transform" BeforeTargets="_TransformAppSettings;_TransformWebConfig">
+		<ItemGroup>
+			<ScFilesToTransform Remove="@(ScFilesToTransform)" />
+			<ScWapPubProfileFullPath Include="$(WebPublishProfileFile)" />
+		</ItemGroup>
+		<PropertyGroup>
+			<ScPubProfile Condition="'$(ScPubProfile)' == '' and '@(ScWapPubProfileFullPath)' != ''">%(ScWapPubProfileFullPath.Filename)</ScPubProfile>
+		</PropertyGroup>
+		<ItemGroup>
+			<ScFilesToTransform Include="@(None);@(Content);@(Resource);@(EmbeddedResource)" Condition=" '%(TransformOnBuild)' == 'true' ">
+				<SourceFile>%(FullPath)</SourceFile>
+				<TransformFile>%(RelativeDir)%(Filename).$(Configuration)%(Extension)</TransformFile>
+				<DestinationFile>$(OutDir)%(RelativeDir)%(Filename)%(Extension)</DestinationFile>
+				<DestinationFile Condition="'%(Link)' != ''">$(OutDir)%(Link)</DestinationFile>
+				<PublishDestinationFile>$(PublishDir)\%(RelativeDir)%(Filename)%(Extension)</PublishDestinationFile>
+				<PublishDestinationFile Condition="'%(Link)' != ''">$(PublishDir)\%(Link)</PublishDestinationFile>
+				<PublishTransformFile>%(RelativeDir)%(Filename).$(ScPubProfile)%(Extension)</PublishTransformFile>
+			</ScFilesToTransform>
+		</ItemGroup>
+		<ItemGroup>
+			<_ScPublishDirsToCreate Include="@(ScFilesToTransform -> '%(PublishDestinationFile)')" Condition="Exists('%(TransformFile)') or Exists('%(PublishTransformFile)')" />
+		</ItemGroup>
+		<MakeDir Directories="@(_ScPublishDirsToCreate->'%(RelativeDir)')" Condition=" !Exists('%(RelativeDir)') " />
+		<SlowCheetah.TransformTask Condition="Exists('%(TransformFile)')" Destination="%(PublishDestinationFile)" Source="@(ScFilesToTransform->'%(SourceFile)')" Transform="%(TransformFile)" />
+		<SlowCheetah.TransformTask Condition=" Exists('%(PublishTransformFile)') and '$(ScPubProfile)'!='' and '$(ScPubProfile)' != '$(Configuration)'" Destination="%(PublishDestinationFile)" Source="@(ScFilesToTransform->'%(PublishDestinationFile)')" Transform="%(PublishTransformFile)" />
+	</Target>
 </Project>
